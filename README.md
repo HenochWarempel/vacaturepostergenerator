@@ -1,6 +1,8 @@
 # Vacatureposter-generator – Jenson Recruitment
 
-Start: dubbelklik `start.bat` (vereist Node.js) of draai `node server.js` en open http://localhost:5173
+Online gebruiken (niets installeren): https://henochwarempel.github.io/vacaturepostergenerator/
+
+Lokaal draaien: dubbelklik `start.bat` (vereist Node.js) of draai `node server.js` en open http://localhost:5173
 
 1. Upload een vacaturetekst (.docx / .pdf / .txt), plak de tekst, of vul de velden zelf in.
 2. Controleer de velden (de tekstherkenning werkt lokaal met kopjes in het Pools, Nederlands en Engels).
@@ -8,3 +10,6 @@ Start: dubbelklik `start.bat` (vereist Node.js) of draai `node server.js` en ope
 
 Huisstijl: kleuren #0089B2 / #B0DAE7 / #00303F, lettertype Lexend, logo en vormen uit de Figma social templates. Vorige versie (met Comme-lettertype): map backup-v1.
 Posterstijl staat in public/poster.css, herkenning van kopjes in public/parser.js.
+
+## Publiceren
+Elke push naar `main` wordt automatisch gepubliceerd via GitHub Pages (map `public/`, zie `.github/workflows/pages.yml`). Eenmalig instellen: Settings > Pages > Source: GitHub Actions.
