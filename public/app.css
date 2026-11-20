@@ -66,3 +66,6 @@ summary{cursor:pointer;font-weight:600;color:var(--green-d)}
 
 .seg.lang{margin-left:6px}
 .seg.lang button{padding:7px 12px;font-size:13px;letter-spacing:.04em}
+
+.hint.small{font-size:13px;margin:8px 0 0}
+fieldset.postlang{border-top:0;margin-top:14px;padding-top:0}

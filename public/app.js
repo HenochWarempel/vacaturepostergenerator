@@ -8,19 +8,27 @@
   const LIMIT = { square: { tasks: 4, profile: 4, offer: 4 }, portrait: { tasks: 5, profile: 5, offer: 5 }, landscape: { tasks: 3, profile: 3, offer: 3 } };
   const FMT_NAME = { square: '1x1', portrait: '4x5', landscape: '1200x628' };
 
-  const DEFAULT_LABELS = {
-    tasks: 'Czym będziesz się zajmować', profile: 'Czego oczekujemy', offer: 'Co oferujemy',
-    tagline: 'Łączymy ludzi z pracodawcami', kicker: 'Szukamy',
-    location: 'Lokalizacja', hours: 'Godziny', contract: 'Umowa', salary: 'Wynagrodzenie', qr: 'Aplikuj',
+  // Vaste teksten op de poster, per posterTaal. Alles blijft apart aanpasbaar in het formulier.
+  const PRESETS = {
+    pl: {
+      labels: { tasks: 'Czym będziesz się zajmować', profile: 'Czego oczekujemy', offer: 'Co oferujemy',
+        tagline: 'Łączymy ludzi z pracodawcami', kicker: 'Szukamy',
+        location: 'Lokalizacja', hours: 'Godziny', contract: 'Umowa', salary: 'Wynagrodzenie', qr: 'Aplikuj' },
+      cta: 'Aplikuj już dziś!', ctaSub: 'Napisz lub zadzwoń – odpowiemy szybko.',
+    },
+    nl: {
+      labels: { tasks: 'Wat ga je doen?', profile: 'Wat vragen we?', offer: 'Wat bieden we?',
+        tagline: 'Wij verbinden mensen met werkgevers', kicker: 'Wij zoeken',
+        location: 'Locatie', hours: 'Uren', contract: 'Dienstverband', salary: 'Salaris', qr: 'Solliciteer' },
+      cta: 'Solliciteer nu!', ctaSub: 'Bel of mail ons – we reageren snel.',
+    },
   };
-  const CONTACT_DEFAULTS = {
-    cta: 'Aplikuj już dziś!', ctaSub: 'Napisz lub zadzwoń – odpowiemy szybko.',
-    phone: '+31 644 682 220', email: 'hello@jenson-recruitment.com', web: 'www.jenson-recruitment.com',
-  };
-  const EMPTY = () => ({
-    format: 'square', title: '', employer: '', highlight: '', location: '', hours: '', contract: '', salary: '',
+  const DEFAULT_LABELS = PRESETS.pl.labels;
+  const CONTACT_DEFAULTS = { phone: '+31 644 682 220', email: 'hello@jenson-recruitment.com', web: 'www.jenson-recruitment.com' };
+  const EMPTY = (pl = 'pl') => ({
+    format: 'square', posterLang: pl, title: '', employer: '', highlight: '', location: '', hours: '', contract: '', salary: '',
     tasks: '', profile: '', offer: '', reference: '', applyUrl: '', photo: null,
-    ...CONTACT_DEFAULTS, labels: { ...DEFAULT_LABELS },
+    ...CONTACT_DEFAULTS, cta: PRESETS[pl].cta, ctaSub: PRESETS[pl].ctaSub, labels: { ...PRESETS[pl].labels },
   });
   const SAMPLE = () => ({
     ...EMPTY(),
@@ -184,7 +192,25 @@
     $$('[data-k]').forEach((el) => (el.value = state[el.dataset.k] ?? ''));
     $$('[data-l]').forEach((el) => (el.value = state.labels[el.dataset.l] ?? ''));
     $$('#fmtSeg button').forEach((b) => b.classList.toggle('on', b.dataset.fmt === state.format));
+    $$('#plSeg button').forEach((b) => b.classList.toggle('on', b.dataset.plang === state.posterLang));
   }
+
+  // Wissel de taal van de vaste posterteksten; eigen aanpassingen blijven staan.
+  function setPosterLang(to) {
+    const from = state.posterLang;
+    if (from === to) return;
+    for (const k of Object.keys(PRESETS[to].labels)) if (state.labels[k] === PRESETS[from].labels[k] || !state.labels[k]) state.labels[k] = PRESETS[to].labels[k];
+    for (const k of ['cta', 'ctaSub']) if (state[k] === PRESETS[from][k] || !state[k]) state[k] = PRESETS[to][k];
+    state.posterLang = to;
+  }
+  function detectLang(ls) {
+    const txt = ls.map((l) => l.t).join(' ');
+    const pol = (txt.match(/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g) || []).length;
+    if (pol / Math.max(txt.length, 1) > 0.008) return 'pl';
+    const nl = (txt.toLowerCase().match(/\b(de|het|een|wij|je|jij|en|voor|met|bij|werkzaamheden|ervaring)\b/g) || []).length;
+    return nl >= 4 ? 'nl' : null;
+  }
+  $$('#plSeg button').forEach((b) => b.addEventListener('click', () => { setPosterLang(b.dataset.plang); fillForm(); refresh(); }));
   let raf;
   const refresh = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { render(); save(); }); };
   $$('[data-k]').forEach((el) => el.addEventListener('input', () => { state[el.dataset.k] = el.value; refresh(); }));
@@ -194,7 +220,7 @@
   $('#btnSample').onclick = () => { state = SAMPLE(); fillForm(); refresh(); $('#parseNotice').hidden = true; };
   $('#btnReset').onclick = () => {
     if (!confirm(t('confirmReset'))) return;
-    const fmt = state.format; state = EMPTY(); state.format = fmt; fillForm(); refresh(); $('#parseNotice').hidden = true;
+    const fmt = state.format; state = EMPTY(state.posterLang); state.format = fmt; fillForm(); refresh(); $('#parseNotice').hidden = true;
   };
 
   /* ---------- foto ---------- */
@@ -215,7 +241,9 @@
   /* ---------- upload / plakken ---------- */
   function showNotice(sel, type, html) { const n = $(sel); n.className = 'notice ' + (type || ''); n.innerHTML = html; n.hidden = false; }
 
-  function applyParsed(fields) {
+  function applyParsed(fields, guess) {
+    let switched = null;
+    if (guess && guess !== state.posterLang) { setPosterLang(guess); switched = guess; }
     const found = [], missing = [];
     const label = t('fields');
     const reset = EMPTY();
@@ -225,7 +253,7 @@
     fillForm(); refresh();
     const n = (k) => lines(fields[k]).length;
     const counts = (n('tasks') || n('profile') || n('offer')) ? t('counts', n('tasks'), n('profile'), n('offer')) : '';
-    const html = t('parsed', found.join(', '), counts, missing.join(', '));
+    const html = t('parsed', found.join(', '), counts, missing.join(', ')) + (switched ? '<br>' + t('langSwitched', t('plNames')[switched]) : '');
     showNotice('#parseNotice', found.length >= 4 ? '' : 'warn', html);
   }
 
@@ -235,7 +263,7 @@
     try {
       const ls = await VacancyParser.fileToLines(file);
       if (!ls.length) throw new Error(t('noText'));
-      applyParsed(VacancyParser.parse(ls));
+      applyParsed(VacancyParser.parse(ls), detectLang(ls));
     } catch (err) { showNotice('#parseNotice', 'err', esc(err.code === 'doc' ? t('docOld') : (err.message || t('readErr')))); }
   }
   const drop = $('#drop'), fileIn = $('#file');
@@ -247,7 +275,7 @@
   $('#btnParse').onclick = () => {
     const t = $('#pasteText').value.trim();
     if (!t) return showNotice('#parseNotice', 'warn', t('pasteFirst'));
-    applyParsed(VacancyParser.parse(VacancyParser.textToLines(t)));
+    const pls = VacancyParser.textToLines(t); applyParsed(VacancyParser.parse(pls), detectLang(pls));
   };
 
   /* ---------- export ---------- */

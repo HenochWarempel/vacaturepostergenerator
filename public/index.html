@@ -43,6 +43,15 @@
       <div class="card">
         <h2><span class="step">2</span> <span data-i18n="s2">Gegevens controleren of invullen</span></h2>
 
+        <fieldset class="postlang">
+          <legend data-i18n="lgPostLang">Taal van de poster</legend>
+          <div class="seg" id="plSeg" role="group">
+            <button type="button" data-plang="pl" class="on">Polski</button>
+            <button type="button" data-plang="nl">Nederlands</button>
+          </div>
+          <p class="hint small" data-i18n="plHint"></p>
+        </fieldset>
+
         <fieldset>
           <legend data-i18n="lgFunction">Functie</legend>
           <label><span data-i18n-html="fTitle"></span> <input data-k="title" type="text" placeholder="Pracownik Działu Technicznego"></label>
@@ -95,7 +104,7 @@
           </div>
         </fieldset>
 
-        <details class="advanced">
+        <details class="advanced" open>
           <summary data-i18n="advSum">Koppen en labels aanpassen (Pools)</summary>
           <div class="grid2">
             <label><span data-i18n="lTasks"></span> <input data-l="tasks" type="text"></label>
