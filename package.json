@@ -1,0 +1,23 @@
+{
+  "name": "vacaturepostergenerator",
+  "version": "1.0.0",
+  "description": "Vacatureposter-generator voor Jenson Recruitment",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@fontsource/comme": "^5.3.0",
+    "@fontsource/lexend": "^5.3.0",
+    "html-to-image": "^1.11.13",
+    "jspdf": "^4.2.1",
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^6.5.438",
+    "qrcode-generator": "^2.0.4",
+    "sharp": "^0.35.5"
+  },
+  "private": true
+}

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vacatureposter-generator – Jenson Recruitment</title>
+<link rel="stylesheet" href="poster.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><img src="assets/logo.png" alt="Jenson Recruitment"><span data-i18n="brand">Vacatureposter-generator</span></div>
+    <div class="top-actions">
+      <button class="btn ghost" id="btnSample" type="button" data-i18n="sample">Voorbeeld laden</button>
+      <button class="btn ghost" id="btnReset" type="button" data-i18n="reset">Nieuwe vacature</button>
+      <div class="seg lang" id="langSeg" role="group" aria-label="Taal / Język">
+        <button type="button" data-lang="nl" class="on" title="Nederlands">NL</button>
+        <button type="button" data-lang="pl" title="Polski">PL</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ============ INVOER ============ -->
+    <section class="panel form" id="form">
+      <div class="card">
+        <h2><span class="step">1</span> <span data-i18n="s1">Vacaturetekst invoeren</span></h2>
+        <p class="hint" data-i18n="s1hint"></p>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept=".docx,.pdf,.txt,.md" hidden>
+          <span data-i18n-html="drop"></span>
+          <small>.docx · .pdf · .txt</small>
+        </label>
+        <details class="paste">
+          <summary data-i18n="pasteSum">Of plak de tekst</summary>
+          <textarea id="pasteText" rows="6" data-i18n-ph="pastePh"></textarea>
+          <button class="btn" id="btnParse" type="button" data-i18n="parse">Tekst verwerken</button>
+        </details>
+        <div class="notice" id="parseNotice" hidden></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="step">2</span> <span data-i18n="s2">Gegevens controleren of invullen</span></h2>
+
+        <fieldset>
+          <legend data-i18n="lgFunction">Functie</legend>
+          <label><span data-i18n-html="fTitle"></span> <input data-k="title" type="text" placeholder="Pracownik Działu Technicznego"></label>
+          <label><span data-i18n-html="fEmployer"></span> <input data-k="employer" type="text" placeholder="Międzynarodowa firma produkcyjna"></label>
+          <label><span data-i18n-html="fHighlight"></span> <input data-k="highlight" type="text" placeholder="35 dodatkowych dni wolnych"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n-html="lgFacts"></legend>
+          <div class="grid2">
+            <label><span data-i18n="fLocation"></span> <input data-k="location" type="text" placeholder="Ulft-Varsseveld"></label>
+            <label><span data-i18n="fHours"></span> <input data-k="hours" type="text" placeholder="40 godz. · 1 zmiana"></label>
+            <label><span data-i18n="fContract"></span> <input data-k="contract" type="text" placeholder="Umowa od ręki"></label>
+            <label><span data-i18n="fSalary"></span> <input data-k="salary" type="text" placeholder="€ 16–19 / godz."></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n-html="lgTasks"></legend>
+          <textarea data-k="tasks" rows="5"></textarea>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n-html="lgProfile"></legend>
+          <textarea data-k="profile" rows="5"></textarea>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n-html="lgOffer"></legend>
+          <textarea data-k="offer" rows="5"></textarea>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n="lgApply">Reageren</legend>
+          <label><span data-i18n-html="fCta"></span> <input data-k="cta" type="text"></label>
+          <label><span data-i18n="fCtaSub"></span> <input data-k="ctaSub" type="text"></label>
+          <div class="grid2">
+            <label><span data-i18n="fPhone"></span> <input data-k="phone" type="text"></label>
+            <label><span data-i18n="fEmail"></span> <input data-k="email" type="text"></label>
+            <label><span data-i18n="fWeb"></span> <input data-k="web" type="text"></label>
+            <label><span data-i18n-html="fRef"></span> <input data-k="reference" type="text" placeholder="JR-2026-014"></label>
+          </div>
+          <label><span data-i18n-html="fUrl"></span>
+            <input data-k="applyUrl" type="url" placeholder="https://www.jenson-recruitment.com/vacatures/…"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n-html="lgPhoto"></legend>
+          <div class="photo-row">
+            <input type="file" id="photoFile" accept="image/*">
+            <button class="btn ghost small" id="photoClear" type="button" data-i18n="photoClear">Foto verwijderen</button>
+          </div>
+        </fieldset>
+
+        <details class="advanced">
+          <summary data-i18n="advSum">Koppen en labels aanpassen (Pools)</summary>
+          <div class="grid2">
+            <label><span data-i18n="lTasks"></span> <input data-l="tasks" type="text"></label>
+            <label><span data-i18n="lProfile"></span> <input data-l="profile" type="text"></label>
+            <label><span data-i18n="lOffer"></span> <input data-l="offer" type="text"></label>
+            <label><span data-i18n="lTagline"></span> <input data-l="tagline" type="text"></label>
+            <label><span data-i18n="lKicker"></span> <input data-l="kicker" type="text"></label>
+            <label><span data-i18n="lLocation"></span> <input data-l="location" type="text"></label>
+            <label><span data-i18n="lHours"></span> <input data-l="hours" type="text"></label>
+            <label><span data-i18n="lContract"></span> <input data-l="contract" type="text"></label>
+            <label><span data-i18n="lSalary"></span> <input data-l="salary" type="text"></label>
+            <label><span data-i18n="lQr"></span> <input data-l="qr" type="text"></label>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============ VOORBEELD + DOWNLOAD ============ -->
+    <section class="panel preview">
+      <div class="card sticky">
+        <div class="preview-bar">
+          <div class="seg" id="fmtSeg" role="tablist">
+            <button data-fmt="square" class="on" type="button" data-i18n="fmtSquare">Vierkant 1:1</button>
+            <button data-fmt="portrait" type="button" data-i18n="fmtPortrait">Portret 4:5</button>
+            <button data-fmt="landscape" type="button" data-i18n="fmtLandscape">Liggend</button>
+          </div>
+          <select id="scale">
+            <option value="1" data-i18n="q1">Standaard (1080 px)</option>
+            <option value="2" selected data-i18n="q2">Hoge kwaliteit (2160 px)</option>
+          </select>
+        </div>
+
+        <div class="stage" id="stage"><div class="stage-inner" id="stageInner"><div id="poster" class="poster"></div></div></div>
+
+        <div class="downloads">
+          <button class="btn primary" id="dlPng" type="button" data-i18n="dlPng">Download PNG</button>
+          <button class="btn primary" id="dlPdf" type="button" data-i18n="dlPdf">Download PDF</button>
+          <button class="btn" id="dlAll" type="button">PNG + PDF</button>
+        </div>
+        <div class="notice" id="exportMsg" hidden></div>
+
+        <ul class="checks" id="checks"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot" data-i18n-html="footer"></footer>
+</div>
+
+<script src="vendor/mammoth.browser.min.js"></script>
+<script src="vendor/html-to-image.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="i18n.js"></script>
+<script src="parser.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

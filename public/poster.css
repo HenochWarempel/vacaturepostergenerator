@@ -1,0 +1,98 @@
+/* ===== Jenson Recruitment – vacatureposter, stijl van de Figma "social templates" =====
+   Vlakke kleuren: #0089B2 (blauw), #B0DAE7 (licht), #00303F (tekst). Lettertype: Lexend.
+   Witte "uitsnede" met logo linksboven en een witte golf tussen hero en inhoud. Geen verlopen. */
+
+@font-face{font-family:"Lexend";font-weight:400;font-display:block;src:url("fonts/lexend-latin-400-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212}
+@font-face{font-family:"Lexend";font-weight:400;font-display:block;src:url("fonts/lexend-latin-ext-400-normal.woff2") format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+20A0-20AB,U+20AD-20C0,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Lexend";font-weight:600;font-display:block;src:url("fonts/lexend-latin-600-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212}
+@font-face{font-family:"Lexend";font-weight:600;font-display:block;src:url("fonts/lexend-latin-ext-600-normal.woff2") format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+20A0-20AB,U+20AD-20C0,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Lexend";font-weight:700;font-display:block;src:url("fonts/lexend-latin-700-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212}
+@font-face{font-family:"Lexend";font-weight:700;font-display:block;src:url("fonts/lexend-latin-ext-700-normal.woff2") format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+20A0-20AB,U+20AD-20C0,U+2C60-2C7F,U+A720-A7FF}
+
+.poster{
+  --blue:#0089B2; --light:#B0DAE7; --dark:#00303F;
+  --f:1; --b:1; --s:calc(var(--b) * var(--f)); --k:1; --hh:300px;
+  position:relative; box-sizing:border-box; overflow:hidden; background:#fff; color:var(--dark);
+  font-family:"Lexend",system-ui,sans-serif; font-weight:400; line-height:1.3;
+  display:flex; flex-direction:column;
+}
+.poster *{box-sizing:border-box;margin:0;padding:0}
+.poster img{display:block;max-width:none}
+.poster.fmt-square{width:1080px;height:1080px;--hh:215px}
+.poster.fmt-square.has-photo{--hh:300px}
+.poster.fmt-portrait{width:1080px;height:1350px;--hh:300px}
+.poster.fmt-portrait.has-photo{--hh:470px}
+
+/* --- bovenlaag: blauw vlak of foto, loopt door onder de golf --- */
+.p-bgtop{position:absolute;left:0;top:0;width:100%;height:calc(var(--hh) + 150px);background:var(--blue) center/cover no-repeat}
+.p-top{position:relative;flex:none;height:var(--hh);z-index:1}
+.p-blob{position:absolute;left:0;top:0;width:calc(572px*var(--k))}
+.p-blob img{width:100%;height:auto}
+.p-logo{position:absolute;left:calc(173px*var(--k));top:calc(36px*var(--k));width:calc(227px*var(--k));height:auto}
+.p-facts{position:absolute;left:calc(56px*var(--s));right:calc(56px*var(--s));bottom:calc(52px*var(--s));display:flex;flex-wrap:wrap;gap:calc(12px*var(--s))}
+.p-fact{display:flex;align-items:center;gap:calc(12px*var(--s));background:#fff;border-radius:999px;padding:calc(8px*var(--s)) calc(24px*var(--s)) calc(8px*var(--s)) calc(8px*var(--s));min-width:0}
+.p-ico{flex:none;width:calc(46px*var(--s));height:calc(46px*var(--s));border-radius:50%;background:var(--blue);display:grid;place-items:center}
+.p-ico svg{width:56%;height:56%;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.p-fact-l{font-size:calc(12px*var(--s));font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);line-height:1.1}
+.p-fact-v{font-size:calc(21px*var(--s));font-weight:600;line-height:1.2;color:var(--dark)}
+
+/* --- hoofdvlak met golf --- */
+.p-main{position:relative;flex:1;min-height:0;overflow:hidden;z-index:1}
+.p-wave{position:absolute;left:-7.11%;top:0;width:108.67%;height:auto}
+.p-union{position:absolute;left:-10.87%;top:23px;width:116.07%;height:auto}
+.p-content{position:relative;z-index:2;padding:calc(104px*var(--s)) calc(56px*var(--s)) calc(16px*var(--s))}
+.p-title{font-weight:700;line-height:1.12;font-size:calc(var(--ts,76px)*var(--s));letter-spacing:-.01em;text-wrap:balance;overflow-wrap:break-word}
+.p-employer{margin-top:calc(12px*var(--s));font-size:calc(27px*var(--s));font-weight:400;line-height:1.3}
+.p-badge{display:inline-block;margin-top:calc(18px*var(--s));background:#fff;color:var(--dark);font-weight:600;font-size:calc(23px*var(--s));padding:calc(8px*var(--s)) calc(22px*var(--s));border-radius:999px}
+.p-cols{display:grid;grid-template-columns:1fr 1fr;gap:calc(24px*var(--s)) calc(40px*var(--s));margin-top:calc(30px*var(--s))}
+.p-sec h2{font-size:calc(29px*var(--s));font-weight:700;line-height:1.15;margin-bottom:calc(14px*var(--s))}
+.p-sec ul{list-style:none;display:flex;flex-direction:column;gap:calc(12px*var(--s))}
+.p-sec li{position:relative;padding-left:calc(40px*var(--s));font-size:calc(24px*var(--s));line-height:1.3}
+.p-sec li::before{content:"";position:absolute;left:0;top:calc(2px*var(--s));width:calc(27px*var(--s));height:calc(27px*var(--s));border-radius:50%;
+  background:var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/68% no-repeat}
+.p-offer{margin-top:calc(26px*var(--s));background:var(--blue);color:#fff;border-radius:calc(30px*var(--s));padding:calc(24px*var(--s)) calc(32px*var(--s)) calc(26px*var(--s))}
+.p-offer ul{display:grid;grid-template-columns:1fr 1fr;gap:calc(12px*var(--s)) calc(30px*var(--s))}
+.p-offer li::before{background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230089B2' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/68% no-repeat}
+
+/* --- voet: vlak blauw, witte knopjes zoals de "Meer weten?"-slide --- */
+.p-foot{flex:none;position:relative;z-index:2;background:var(--blue);color:#fff;display:flex;align-items:center;gap:calc(32px*var(--s));padding:calc(26px*var(--s)) calc(56px*var(--s))}
+.p-cta{flex:1;min-width:0}
+.p-cta-t{font-size:calc(40px*var(--s));font-weight:700;line-height:1.1}
+.p-cta-s{margin-top:calc(8px*var(--s));font-size:calc(20px*var(--s));line-height:1.3}
+.p-contact{display:flex;flex-direction:column;gap:calc(9px*var(--s));flex:none}
+.p-contact div{display:flex;align-items:center;gap:calc(10px*var(--s));background:#fff;color:var(--dark);border-radius:999px;padding:calc(7px*var(--s)) calc(20px*var(--s)) calc(7px*var(--s)) calc(10px*var(--s));font-size:calc(20px*var(--s));font-weight:400;white-space:nowrap}
+.p-contact svg{width:calc(24px*var(--s));height:calc(24px*var(--s));fill:none;stroke:var(--blue);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.p-qr{flex:none;background:#fff;border-radius:calc(16px*var(--s));padding:calc(9px*var(--s));text-align:center;color:var(--dark)}
+.p-qr svg{display:block;width:calc(104px*var(--s));height:calc(104px*var(--s))}
+.p-qr small{display:block;margin-top:calc(4px*var(--s));font-size:calc(12px*var(--s));font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.p-ref{position:absolute;right:calc(18px*var(--s));bottom:calc(5px*var(--s));font-size:calc(11px*var(--s));color:rgba(255,255,255,.7);letter-spacing:.05em}
+
+/* --- liggend (1200x628): blauw paneel links, licht vlak rechts --- */
+.poster.fmt-landscape{width:1200px;height:628px;--b:.84;--k:.8;display:grid;grid-template-columns:430px 1fr;grid-template-rows:1fr auto;grid-template-areas:"left right" "foot foot"}
+.L-left{grid-area:left;position:relative;background:var(--blue);color:#fff;padding:calc(150px*var(--s)) calc(34px*var(--s)) calc(20px*var(--s));display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.L-left .p-title{font-size:calc(var(--ts,76px)*var(--s)*.7);color:#fff}
+.L-left .p-employer{font-size:calc(26px*var(--s));margin-top:calc(10px*var(--s))}
+.L-left .p-badge{align-self:flex-start}
+.L-facts{display:flex;flex-direction:column;gap:calc(8px*var(--s));margin-top:auto;padding-top:calc(14px*var(--s))}
+.L-facts .p-fact{align-self:flex-start;padding-right:calc(20px*var(--s))}
+.L-facts .p-ico{width:calc(36px*var(--s));height:calc(36px*var(--s))}
+.L-facts .p-fact-l{display:none}
+.L-facts .p-fact-v{font-size:calc(20px*var(--s))}
+.L-right{grid-area:right;background:var(--light);padding:calc(30px*var(--s)) calc(40px*var(--s)) calc(16px*var(--s));display:flex;flex-direction:column;gap:calc(20px*var(--s));min-height:0;overflow:hidden}
+.L-right .p-sec h2{font-size:calc(26px*var(--s));margin-bottom:calc(10px*var(--s))}
+.L-right .p-sec li{font-size:calc(22px*var(--s))}
+.L-right .p-sec ul{gap:calc(8px*var(--s))}
+.fmt-landscape .p-foot{padding:calc(16px*var(--s)) calc(36px*var(--s))}
+.fmt-landscape .p-cta-t{font-size:calc(34px*var(--s))}
+.fmt-landscape .p-qr svg{width:calc(84px*var(--s));height:calc(84px*var(--s))}
+.fmt-landscape .p-contact div{font-size:calc(18px*var(--s))}
+.fmt-landscape .p-foot{grid-area:foot}
+
+/* --- kerngegevens onder elkaar rechts in de header (1:1 en 4:5), buiten de witte uitsnede --- */
+.p-facts{left:auto;right:calc(48px*var(--s));bottom:calc(38px*var(--s));flex-direction:column;align-items:flex-end;flex-wrap:nowrap;gap:calc(7px*var(--s));max-width:calc(440px*var(--s))}
+.p-facts .p-fact{padding:calc(5px*var(--s)) calc(20px*var(--s)) calc(5px*var(--s)) calc(5px*var(--s));gap:calc(10px*var(--s));border-radius:calc(28px*var(--s))}
+.p-facts .p-ico{width:calc(36px*var(--s));height:calc(36px*var(--s))}
+.p-facts .p-fact-l{display:none}
+.p-facts .p-fact-v{font-size:calc(20px*var(--s))}
+.poster.fmt-square{--hh:250px}
+.poster.fmt-square.has-photo{--hh:310px}
