@@ -151,3 +151,7 @@
 
 .p-title{font-size:calc(var(--ts,76px)*var(--s)*var(--tk,1))}
 .L-left .p-title{font-size:calc(var(--ts,76px)*var(--s)*.7*var(--tk,1))}
+
+/* woordafbreking: Nederlands via zachte koppeltekens (hyphen.js), Pools via de browser */
+.poster{hyphens:manual;-webkit-hyphens:manual}
+.poster:lang(pl) .p-title,.poster:lang(pl) .p-employer,.poster:lang(pl) .p-sec li{hyphens:auto;-webkit-hyphens:auto}

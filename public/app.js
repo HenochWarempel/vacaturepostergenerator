@@ -90,6 +90,8 @@
 
   function renderPass(cut, variant, clamp) {
     const s = state, L = s.labels, lim = LIMIT[s.format];
+    // Nederlandse samenstellingen logisch afbreken (Magazijn-medewerker); bij Pools doet de browser dat zelf
+    const hy = (txt) => (s.posterLang === 'nl' ? Hyphen.hyphenate(txt) : txt);
     const lists = { tasks: lines(s.tasks), profile: lines(s.profile), offer: lines(s.offer) };
     const shown = {};
     for (const k of Object.keys(lists)) shown[k] = Math.max(0, Math.min(lim[k], lists[k].length) - (cut[k] || 0));
@@ -98,14 +100,14 @@
     const hasPhoto = !!s.photo && !land;
     const sec = (k, cls = '') => {
       const items = lists[k].slice(0, shown[k]);
-      return items.length ? `<section class="p-sec ${cls}"><h2>${esc(L[k])}</h2><ul>${items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></section>` : '';
+      return items.length ? `<section class="p-sec ${cls}"><h2>${esc(L[k])}</h2><ul>${items.map((i) => `<li>${esc(hy(i))}</li>`).join('')}</ul></section>` : '';
     };
     const contact = [['phone', s.phone], ['email', s.email], ['web', s.web]].filter(([, v]) => v && v.trim());
     const qr = s.applyUrl.trim() ? qrSvg(s.applyUrl.trim()) : '';
     const factHtml = facts.map((k) => `<div class="p-fact"><div class="p-ico">${svg(k)}</div><div class="p-fact-t"><div class="p-fact-l">${esc(L[k])}</div><div class="p-fact-v">${esc(s[k])}</div></div></div>`).join('');
     const titleHtml = `${L.kicker.trim() && land ? `<div class="p-employer" style="margin:0 0 10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:calc(18px*var(--s))">${esc(L.kicker)}</div>` : ''}
-          <h1 class="p-title">${esc(s.title || 'Functietitel')}</h1>
-          ${s.employer.trim() ? `<div class="p-employer">${esc(s.employer)}</div>` : ''}
+          <h1 class="p-title">${esc(hy(s.title || 'Functietitel'))}</h1>
+          ${s.employer.trim() ? `<div class="p-employer">${esc(hy(s.employer))}</div>` : ''}
           ${s.highlight.trim() ? `<div class="p-badge">${esc(s.highlight)}</div>` : ''}`;
     const blob = `<div class="p-blob"><img src="assets/blob.svg" width="572" height="167" alt=""></div><img class="p-logo" src="assets/logo.png" alt="Jenson Recruitment">`;
     const foot = `<footer class="p-foot">
@@ -117,6 +119,7 @@
 
     const offerLong = Math.max(0, ...lists.offer.slice(0, shown.offer).map((x) => x.length)) > 32;
     poster.className = `poster fmt-${s.format}${hasPhoto ? ' has-photo' : ''}${offerLong ? ' offer-1' : ''}${clamp ? ' clamp' : ''}`;
+    poster.lang = s.posterLang === 'pl' ? 'pl' : 'nl';
     poster.style.setProperty('--ts', titleSize(s.title.length) + 'px');
     if (land) {
       poster.innerHTML = `
