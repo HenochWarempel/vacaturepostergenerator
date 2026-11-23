@@ -387,7 +387,7 @@
   }
   const drop = $('#drop'), fileIn = $('#file');
   fileIn.addEventListener('change', () => { handleFile(fileIn.files[0]); fileIn.value = ''; });
-  drop.addEventListener('click', (e) => { e.preventDefault(); fileIn.click(); });
+  // De zone is een <label> om het (verborgen) bestandsveld: klikken opent de bestandskiezer vanzelf.
   ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
   ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
   drop.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
