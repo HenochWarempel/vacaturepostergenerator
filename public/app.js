@@ -5,7 +5,7 @@
   const lines = (s) => String(s || '').split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
 
   const SIZE = { square: [1080, 1080], portrait: [1080, 1350], landscape: [1200, 628] };
-  const LIMIT = { square: { tasks: 4, profile: 4, offer: 4 }, portrait: { tasks: 5, profile: 5, offer: 5 }, landscape: { tasks: 3, profile: 3, offer: 3 } };
+  const LIMIT = { square: { tasks: 3, profile: 3, offer: 4 }, portrait: { tasks: 4, profile: 4, offer: 4 }, landscape: { tasks: 3, profile: 3, offer: 3 } };
   const FMT_NAME = { square: '1x1', portrait: '4x5', landscape: '1200x628' };
 
   // Vaste teksten op de poster, per posterTaal. Alles blijft apart aanpasbaar in het formulier.
@@ -88,14 +88,16 @@
     return len <= 20 ? 76 : len <= 32 ? 66 : len <= 46 ? 58 : 50;
   }
 
-  function render() {
+  function renderPass(cut, variant, clamp) {
     const s = state, L = s.labels, lim = LIMIT[s.format];
     const lists = { tasks: lines(s.tasks), profile: lines(s.profile), offer: lines(s.offer) };
+    const shown = {};
+    for (const k of Object.keys(lists)) shown[k] = Math.max(0, Math.min(lim[k], lists[k].length) - (cut[k] || 0));
     const facts = ['location', 'hours', 'contract', 'salary'].filter((k) => s[k].trim());
     const land = s.format === 'landscape';
     const hasPhoto = !!s.photo && !land;
     const sec = (k, cls = '') => {
-      const items = lists[k].slice(0, lim[k]);
+      const items = lists[k].slice(0, shown[k]);
       return items.length ? `<section class="p-sec ${cls}"><h2>${esc(L[k])}</h2><ul>${items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></section>` : '';
     };
     const contact = [['phone', s.phone], ['email', s.email], ['web', s.web]].filter(([, v]) => v && v.trim());
@@ -113,7 +115,8 @@
         ${s.reference.trim() ? `<div class="p-ref">${esc(s.reference)}</div>` : ''}
       </footer>`;
 
-    poster.className = `poster fmt-${s.format}${hasPhoto ? ' has-photo' : ''}`;
+    const offerLong = Math.max(0, ...lists.offer.slice(0, shown.offer).map((x) => x.length)) > 32;
+    poster.className = `poster fmt-${s.format}${hasPhoto ? ' has-photo' : ''}${offerLong ? ' offer-1' : ''}${clamp ? ' clamp' : ''}`;
     poster.style.setProperty('--ts', titleSize(s.title.length) + 'px');
     if (land) {
       poster.innerHTML = `
@@ -136,19 +139,79 @@
         </div>
         ${foot}`;
     }
+    // hero groeit mee als de kerngegevens (onder elkaar rechts) meer ruimte nodig hebben
+    poster.style.removeProperty('--hh'); poster.style.setProperty('--f', '1');
+    const factsEl = $('.p-facts', poster);
+    if (factsEl) {
+      const def = parseFloat(getComputedStyle(poster).getPropertyValue('--hh')) || 300;
+      const need = factsEl.offsetHeight + 62;
+      if (need > def) poster.style.setProperty('--hh', Math.ceil(need) + 'px');
+    }
+    const VARS = ['lay-a', 'lay-c'];
+    poster.classList.remove(...VARS);
+    if (!land) poster.classList.add(variant || 'lay-a');
     lastFit = fit();
+    return { lists, lim, facts, shown, clamp: !!clamp };
+  }
+
+  const MIN_LI_PX = { square: 22, portrait: 24, landscape: 20 };
+  // Zoekt per layoutvariant hoeveel punten er bij een leesbare lettergrootte passen
+  // en kiest de variant die de meeste punten toont (bij gelijkspel: de eerste, 2 kolommen).
+  function solve(variant, clamp) {
+    const cut = { tasks: 0, profile: 0, offer: 0 };
+    let info;
+    for (let i = 0; i < 12; i++) {
+      info = renderPass(cut, variant, clamp);
+      const li = $('.p-sec li', poster);
+      if (!li || parseFloat(getComputedStyle(li).fontSize) >= MIN_LI_PX[state.format]) break;
+      let pick = null, most = -1;
+      for (const k of ['tasks', 'profile', 'offer']) {
+        if (info.shown[k] <= 2) continue;                       // nooit onder 2 punten per blok
+        const chars = info.lists[k].slice(0, info.shown[k]).join('').length;
+        if (chars > most) { most = chars; pick = k; }
+      }
+      if (!pick) break;
+      cut[pick]++;
+    }
+    const total = info.shown.tasks + info.shown.profile + info.shown.offer;
+    const li = $('.p-sec li', poster);
+    return { variant, clamp, cut, total, px: li ? parseFloat(getComputedStyle(li).fontSize) : 99 };
+  }
+  function render() {
+    const variants = state.format === 'landscape' ? [undefined] : ['lay-a', 'lay-c'];
+    let best = null;
+    for (const v of variants) {
+      const r = solve(v, false);
+      if (!best || r.total > best.total || (r.total === best.total && r.px > best.px + 1)) best = r;
+    }
+    // laatste redmiddel: extreem lange punten maximaal 2 regels laten innemen
+    if (best.px < MIN_LI_PX[state.format] - 0.5) {
+      for (const v of variants) {
+        const r = solve(v, true);
+        if (r.px > best.px + 1 || (r.px >= MIN_LI_PX[state.format] - 0.5 && r.total > best.total)) best = r;
+      }
+    }
+    const info = renderPass(best.cut, best.variant, best.clamp);
     layoutStage();
-    runChecks(lists, lim, facts);
+    runChecks(info.lists, info.lim, info.facts, info.shown, info.clamp);
   }
 
   function fit() {
     const content = $('.p-content', poster), main = $('.p-main', poster), right = $('.L-right', poster), left = $('.L-left', poster);
     const over = () => {
       if (poster.scrollWidth > poster.clientWidth + 1) return true;
+      const tt = $('.p-title', poster);
+      if (tt && tt.scrollWidth > tt.clientWidth + 1) return true;      // één lang woord mag niet midden in het woord breken
       if (content) return content.offsetTop + content.offsetHeight > main.clientHeight + 1 || poster.scrollHeight > poster.clientHeight + 1;
       return right.scrollHeight > right.clientHeight + 1 || left.scrollHeight > left.clientHeight + 1;
     };
-    const set = (f) => poster.style.setProperty('--f', f.toFixed(3));
+    // alleen de titel verkleinen als één lang woord anders niet past (de rest van de poster blijft groot)
+    const fitTitle = () => {
+      const tt = $('.p-title', poster); if (!tt) return;
+      let k = 1; poster.style.setProperty('--tk', '1');
+      while (tt.scrollWidth > tt.clientWidth + 1 && k > 0.5) { k -= 0.04; poster.style.setProperty('--tk', k.toFixed(2)); }
+    };
+    const set = (f) => { poster.style.setProperty('--f', f.toFixed(3)); fitTitle(); };
     let f = 1; set(f);
     if (over()) { while (over() && f > 0.5) { f -= 0.02; set(f); } }
     else { while (f < 1.22) { set(f + 0.02); if (over()) { set(f); break; } f += 0.02; } }
@@ -169,17 +232,18 @@
   addEventListener('resize', layoutStage);
 
   /* ---------- controle ---------- */
-  function runChecks(lists, lim, facts) {
+  function runChecks(lists, lim, facts, shown, clamp) {
     const out = [];
     const add = (type, msg) => out.push(`<li class="${type}">${msg}</li>`);
     if (!state.title.trim()) add('err', t('cNoTitle'));
     const names = t('names');
     for (const k of Object.keys(lists)) {
       if (!lists[k].length) add('warn', t('cEmpty', names[k]));
-      else if (lists[k].length > lim[k]) add('warn', t('cMany', names[k], lim[k], lists[k].length));
+      else if (shown[k] < lists[k].length) add('warn', t('cMany', names[k], shown[k], lists[k].length));
     }
     const long = Object.values(lists).flat().filter((x) => x.length > 90).length;
     if (long) add('warn', t('cLong', long));
+    if (clamp) add('warn', t('cClamp'));
     if (lastFit * ({ square: 1, portrait: 1.12, landscape: 0.84 }[state.format]) < 0.85) add('warn', t('cSmall'));
     if (!facts.length) add('warn', t('cNoFacts'));
     if (!state.phone.trim() && !state.email.trim() && !state.web.trim()) add('err', t('cNoContact'));

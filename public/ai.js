@@ -27,7 +27,7 @@ Rules:
 - "location": place name(s) only.
 - "hours": working hours / shifts in a few words (e.g. "40 h/week, day shift").
 - "contract": type of employment in a few words. "salary": pay as written, short.
-- "tasks", "profile", "offer": the 3 to 5 most important points each, in order of importance. Each point is a short phrase of at most 70 characters, no trailing period, no bullet characters. Merge and shorten long sentences. "profile" = requirements for the candidate. "offer" = what the employer offers.
+- "tasks", "profile", "offer": the 3 most important points each (a 4th only for "offer" if it is a strong selling point), in order of importance. Each point is a short phrase of at most 45 characters (hard limit 55), no trailing period, no bullet characters, so it fits on one or two short lines of a poster. Merge and shorten long sentences. "profile" = requirements for the candidate. "offer" = what the employer offers.
 - "applyUrl": a link to apply for this specific vacancy, if present. "reference": a vacancy/reference number, if present.
 Return only JSON that matches the schema.`;
 

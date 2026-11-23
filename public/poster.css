@@ -18,10 +18,10 @@
 }
 .poster *{box-sizing:border-box;margin:0;padding:0}
 .poster img{display:block;max-width:none}
-.poster.fmt-square{width:1080px;height:1080px;--hh:215px}
+.poster.fmt-square{width:1080px;height:1080px;--hh:200px}
 .poster.fmt-square.has-photo{--hh:300px}
-.poster.fmt-portrait{width:1080px;height:1350px;--hh:300px}
-.poster.fmt-portrait.has-photo{--hh:470px}
+.poster.fmt-portrait{width:1080px;height:1350px;--hh:235px}
+.poster.fmt-portrait.has-photo{--hh:390px}
 
 /* --- bovenlaag: blauw vlak of foto, loopt door onder de golf --- */
 .p-bgtop{position:absolute;left:0;top:0;width:100%;height:calc(var(--hh) + 150px);background:var(--blue) center/cover no-repeat}
@@ -40,7 +40,7 @@
 .p-main{position:relative;flex:1;min-height:0;overflow:hidden;z-index:1}
 .p-wave{position:absolute;left:-7.11%;top:0;width:108.67%;height:auto}
 .p-union{position:absolute;left:-10.87%;top:23px;width:116.07%;height:auto}
-.p-content{position:relative;z-index:2;padding:calc(104px*var(--s)) calc(56px*var(--s)) calc(16px*var(--s))}
+.p-content{position:relative;z-index:2;padding:calc(96px*var(--s)) calc(56px*var(--s)) calc(16px*var(--s))}
 .p-title{font-weight:700;line-height:1.12;font-size:calc(var(--ts,76px)*var(--s));letter-spacing:-.01em;text-wrap:balance;overflow-wrap:break-word}
 .p-employer{margin-top:calc(12px*var(--s));font-size:calc(27px*var(--s));font-weight:400;line-height:1.3}
 .p-badge{display:inline-block;margin-top:calc(18px*var(--s));background:#fff;color:var(--dark);font-weight:600;font-size:calc(23px*var(--s));padding:calc(8px*var(--s)) calc(22px*var(--s));border-radius:999px}
@@ -55,7 +55,7 @@
 .p-offer li::before{background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230089B2' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/68% no-repeat}
 
 /* --- voet: vlak blauw, witte knopjes zoals de "Meer weten?"-slide --- */
-.p-foot{flex:none;position:relative;z-index:2;background:var(--blue);color:#fff;display:flex;align-items:center;gap:calc(32px*var(--s));padding:calc(26px*var(--s)) calc(56px*var(--s))}
+.p-foot{flex:none;position:relative;z-index:2;background:var(--blue);color:#fff;display:flex;align-items:center;gap:calc(32px*var(--s));padding:calc(20px*var(--s)) calc(56px*var(--s))}
 .p-cta{flex:1;min-width:0}
 .p-cta-t{font-size:calc(40px*var(--s));font-weight:700;line-height:1.1}
 .p-cta-s{margin-top:calc(8px*var(--s));font-size:calc(20px*var(--s));line-height:1.3}
@@ -95,7 +95,7 @@
 .p-facts .p-fact-l{display:none}
 .p-facts .p-fact-v{font-size:calc(20px*var(--s))}
 .poster.fmt-square{--hh:250px}
-.poster.fmt-square.has-photo{--hh:310px}
+.poster.fmt-square.has-photo{--hh:270px}
 
 /* --- liggend: kop begint onder de witte uitsnede, kerngegevens als compacte pillen, rechts verticaal gecentreerd --- */
 .fmt-landscape .L-left{padding-top:calc(167px*var(--k) + 20px*var(--s))}
@@ -107,3 +107,47 @@
 .fmt-landscape .L-right .p-sec li::before{width:calc(26px*var(--s));height:calc(26px*var(--s))}
 .fmt-landscape .L-right .p-sec ul{gap:calc(10px*var(--s))}
 .fmt-landscape .L-right{gap:calc(24px*var(--s))}
+
+/* --- layoutvarianten voor lange punten (de app kiest automatisch de beste) --- */
+.lay-b .p-offer ul,.lay-c .p-offer ul{grid-template-columns:1fr}
+.lay-c .p-cols{grid-template-columns:1fr}
+
+/* --- ontwerpverfijning --- */
+.offer-1 .p-offer ul{grid-template-columns:1fr}
+.p-sec h2{font-size:calc(31px*var(--s))}
+/* lege inhoud verticaal centreren zodat korte vacatures niet "leeg onderaan" ogen */
+.p-main{display:flex;flex-direction:column}
+.p-content{margin:auto 0;width:100%}
+/* subtiele ring (vergrootglas-echo) in het blauwe vlak als er geen foto is */
+.poster:not(.has-photo):not(.fmt-landscape) .p-bgtop::after{content:"";position:absolute;left:calc(-110px);bottom:calc(-30px);width:330px;height:330px;border-radius:50%;border:42px solid rgba(176,218,231,.16)}
+.poster:not(.has-photo):not(.fmt-landscape) .p-bgtop{overflow:hidden}
+
+/* --- compacter en rustiger: meer ruimte voor de inhoud, geen losse woorden op de laatste regel --- */
+.p-sec li,.p-employer,.p-cta-s{text-wrap:pretty}
+.p-sec li{overflow-wrap:anywhere;hyphens:manual}
+.p-employer{margin-top:calc(10px*var(--s))}
+.p-badge{margin-top:calc(14px*var(--s));font-size:calc(21px*var(--s));padding:calc(6px*var(--s)) calc(20px*var(--s))}
+.p-cols{margin-top:calc(24px*var(--s));gap:calc(20px*var(--s)) calc(36px*var(--s))}
+.p-offer{margin-top:calc(22px*var(--s));padding:calc(20px*var(--s)) calc(30px*var(--s)) calc(22px*var(--s))}
+.p-sec h2{margin-bottom:calc(10px*var(--s))}
+.p-sec ul{gap:calc(10px*var(--s))}
+.p-foot{padding:calc(18px*var(--s)) calc(56px*var(--s))}
+.p-contact{gap:calc(7px*var(--s))}
+.p-contact div{padding:calc(4px*var(--s)) calc(18px*var(--s)) calc(4px*var(--s)) calc(8px*var(--s));font-size:calc(19px*var(--s))}
+.p-contact svg{width:calc(22px*var(--s));height:calc(22px*var(--s))}
+.p-cta-t{font-size:calc(38px*var(--s))}
+
+/* --- extreem lange teksten: maximaal 2 regels per punt, titel 3 regels, werkgever en kerngegevens 2 regels --- */
+.clamp .p-sec li{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.p-title{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.p-employer{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.p-facts .p-fact-v{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* flex-items mogen niet krimpen, anders wordt overloop niet gemeten en worden teksten afgeknipt */
+.L-left>*,.L-right>*,.L-facts>*{flex-shrink:0}
+
+/* titel: woorden nooit midden in het woord afbreken (de app verkleint de tekst liever) */
+.p-title{overflow-wrap:normal;word-break:normal}
+
+.p-title{font-size:calc(var(--ts,76px)*var(--s)*var(--tk,1))}
+.L-left .p-title{font-size:calc(var(--ts,76px)*var(--s)*.7*var(--tk,1))}

@@ -2,3 +2,4 @@ node_modules/
 .claude/
 backup-v1/
 assets/_src/
+public/_test.js
