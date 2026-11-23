@@ -35,7 +35,18 @@
         <details class="paste">
           <summary data-i18n="pasteSum">Of plak de tekst</summary>
           <textarea id="pasteText" rows="6" data-i18n-ph="pastePh"></textarea>
-          <button class="btn" id="btnParse" type="button" data-i18n="parse">Tekst verwerken</button>
+          <button class="btn" id="btnParse" type="button">Tekst verwerken</button>
+        </details>
+        <details class="ai">
+          <summary><span data-i18n="aiSum">AI-instellingen (optioneel)</span> <span class="badge" id="aiBadge"></span></summary>
+          <p class="hint small" data-i18n-html="aiHint"></p>
+          <label><span data-i18n="aiKeyL"></span>
+            <input id="aiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…"></label>
+          <label><span data-i18n-html="aiModelL"></span>
+            <input id="aiModel" type="text" autocomplete="off" spellcheck="false" placeholder="gpt-4o-mini"></label>
+          <label class="check"><input id="aiOn" type="checkbox"> <span data-i18n="aiOnL"></span></label>
+          <label class="check"><input id="aiRemember" type="checkbox"> <span data-i18n="aiRememberL"></span></label>
+          <button class="btn ghost small" id="aiForget" type="button" data-i18n="aiForget">Key verwijderen</button>
         </details>
         <div class="notice" id="parseNotice" hidden></div>
       </div>
@@ -160,6 +171,7 @@
 <script src="vendor/qrcode.js"></script>
 <script src="i18n.js"></script>
 <script src="parser.js"></script>
+<script src="ai.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

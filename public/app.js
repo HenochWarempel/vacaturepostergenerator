@@ -60,6 +60,7 @@
     $$('[data-i18n-html]').forEach((el) => (el.innerHTML = t(el.dataset.i18nHtml)));
     $$('[data-i18n-ph]').forEach((el) => (el.placeholder = t(el.dataset.i18nPh)));
     $$('#langSeg button').forEach((b) => b.classList.toggle('on', b.dataset.lang === lang));
+    if (typeof updateAiUi === 'function' && $('#aiKey')) updateAiUi();
     document.title = (lang === 'pl' ? 'Generator plakatów ofert pracy' : 'Vacatureposter-generator') + ' – Jenson Recruitment';
   }
 
@@ -241,7 +242,7 @@
   /* ---------- upload / plakken ---------- */
   function showNotice(sel, type, html) { const n = $(sel); n.className = 'notice ' + (type || ''); n.innerHTML = html; n.hidden = false; }
 
-  function applyParsed(fields, guess) {
+  function applyParsed(fields, guess, via) {
     let switched = null;
     if (guess && guess !== state.posterLang) { setPosterLang(guess); switched = guess; }
     const found = [], missing = [];
@@ -253,8 +254,59 @@
     fillForm(); refresh();
     const n = (k) => lines(fields[k]).length;
     const counts = (n('tasks') || n('profile') || n('offer')) ? t('counts', n('tasks'), n('profile'), n('offer')) : '';
-    const html = t('parsed', found.join(', '), counts, missing.join(', ')) + (switched ? '<br>' + t('langSwitched', t('plNames')[switched]) : '');
+    const html = t('parsed', found.join(', '), counts, missing.join(', ')) + (switched ? '<br>' + t('langSwitched', t('plNames')[switched]) : '') + (via ? '<br>' + t('viaAi', esc(via)) : '');
     showNotice('#parseNotice', found.length >= 4 ? '' : 'warn', html);
+  }
+
+  /* ---------- AI (eigen OpenAI-key van de gebruiker, rechtstreeks naar OpenAI) ---------- */
+  const AI = { key: '', model: 'gpt-4o-mini', on: false, remember: false };
+  (function loadAi() {
+    try {
+      let raw = localStorage.getItem('jenson-ai');
+      if (raw) AI.remember = true; else raw = sessionStorage.getItem('jenson-ai');
+      if (raw) { const o = JSON.parse(raw); AI.key = o.key || ''; AI.model = o.model || AI.model; AI.on = !!o.on; }
+    } catch {}
+  })();
+  function saveAi() {
+    try {
+      localStorage.removeItem('jenson-ai'); sessionStorage.removeItem('jenson-ai');
+      if (AI.key) (AI.remember ? localStorage : sessionStorage).setItem('jenson-ai', JSON.stringify({ key: AI.key, model: AI.model, on: AI.on }));
+    } catch {}
+  }
+  const aiActive = () => AI.on && !!AI.key.trim();
+  function updateAiUi() {
+    $('#aiKey').value = AI.key; $('#aiModel').value = AI.model; $('#aiOn').checked = AI.on; $('#aiRemember').checked = AI.remember;
+    $('#btnParse').textContent = t(aiActive() ? 'parseAi' : 'parse');
+    $('#aiBadge').textContent = aiActive() ? t('aiOnBadge') : t('aiOffBadge');
+    $('#aiBadge').classList.toggle('on', aiActive());
+  }
+  $('#aiKey').addEventListener('input', (e) => {
+    const had = !!AI.key.trim(); AI.key = e.target.value.trim();
+    if (!had && AI.key) AI.on = true;
+    if (!AI.key) AI.on = false;
+    saveAi(); updateAiUi();
+  });
+  $('#aiModel').addEventListener('input', (e) => { AI.model = e.target.value.trim() || 'gpt-4o-mini'; saveAi(); });
+  $('#aiOn').addEventListener('change', (e) => { AI.on = e.target.checked; saveAi(); updateAiUi(); });
+  $('#aiRemember').addEventListener('change', (e) => { AI.remember = e.target.checked; saveAi(); });
+  $('#aiForget').addEventListener('click', () => { AI.key = ''; AI.on = false; AI.remember = false; saveAi(); updateAiUi(); });
+
+  async function processLines(ls) {
+    if (aiActive()) {
+      showNotice('#parseNotice', '', t('aiBusy'));
+      try {
+        const text = ls.map((l) => (l.b ? '• ' : '') + l.t).join('\n');
+        const out = await AIExtract.extract(text, { key: AI.key, model: AI.model });
+        applyParsed(out.fields, out.language === 'pl' || out.language === 'nl' ? out.language : detectLang(ls), AI.model);
+      } catch (err) {
+        applyParsed(VacancyParser.parse(ls), detectLang(ls));
+        const n = $('#parseNotice');
+        n.className = 'notice warn';
+        n.innerHTML += '<br><b>' + t('aiFail', esc(t('aiErr')[err.code] || err.message || ''), esc(err.code === 'key' || err.code === 'format' ? '' : (err.message && err.message !== err.code ? err.message : ''))) + '</b>';
+      }
+      return;
+    }
+    applyParsed(VacancyParser.parse(ls), detectLang(ls));
   }
 
   async function handleFile(file) {
@@ -263,7 +315,7 @@
     try {
       const ls = await VacancyParser.fileToLines(file);
       if (!ls.length) throw new Error(t('noText'));
-      applyParsed(VacancyParser.parse(ls), detectLang(ls));
+      await processLines(ls);
     } catch (err) { showNotice('#parseNotice', 'err', esc(err.code === 'doc' ? t('docOld') : (err.message || t('readErr')))); }
   }
   const drop = $('#drop'), fileIn = $('#file');
@@ -272,10 +324,11 @@
   ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
   ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
   drop.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
-  $('#btnParse').onclick = () => {
-    const t = $('#pasteText').value.trim();
-    if (!t) return showNotice('#parseNotice', 'warn', t('pasteFirst'));
-    const pls = VacancyParser.textToLines(t); applyParsed(VacancyParser.parse(pls), detectLang(pls));
+  $('#btnParse').onclick = async () => {
+    const txt = $('#pasteText').value.trim();
+    if (!txt) return showNotice('#parseNotice', 'warn', t('pasteFirst'));
+    const btn = $('#btnParse'); btn.disabled = true;
+    try { await processLines(VacancyParser.textToLines(txt)); } finally { btn.disabled = false; }
   };
 
   /* ---------- export ---------- */
@@ -344,6 +397,7 @@
     render();
   }));
   applyLang();
+  updateAiUi();
   fillForm();
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { render(); });
   render();

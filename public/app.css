@@ -16,7 +16,7 @@ fieldset{border:0;border-top:1px solid var(--line);margin:16px 0 0;padding:14px 
 legend{font-weight:800;color:var(--olive);padding:0 8px 0 0;font-size:15px}
 legend small,label small{font-weight:400;color:var(--muted)}
 label{display:block;font-weight:600;font-size:14px;margin-top:10px}
-input[type=text],input[type=url],textarea,select{width:100%;margin-top:4px;padding:9px 11px;border:1px solid #b5ccd5;border-radius:9px;font:inherit;font-weight:400;background:#fff;color:var(--ink)}
+input[type=text],input[type=url],input[type=password],textarea,select{width:100%;margin-top:4px;padding:9px 11px;border:1px solid #b5ccd5;border-radius:9px;font:inherit;font-weight:400;background:#fff;color:var(--ink)}
 input:focus,textarea:focus,select:focus{outline:2px solid var(--green);outline-offset:0;border-color:var(--green)}
 textarea{resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
@@ -69,3 +69,10 @@ summary{cursor:pointer;font-weight:600;color:var(--green-d)}
 
 .hint.small{font-size:13px;margin:8px 0 0}
 fieldset.postlang{border-top:0;margin-top:14px;padding-top:0}
+
+details.ai{margin-top:12px}
+details.ai label.check{display:flex;align-items:center;gap:8px;font-weight:400;margin-top:8px}
+details.ai label.check input{width:auto;margin:0}
+details.ai .btn{margin-top:10px}
+.badge{display:inline-block;margin-left:6px;padding:1px 9px;border-radius:999px;background:#e4f2f7;color:var(--muted);font-size:12px;font-weight:600}
+.badge.on{background:var(--green);color:#fff}
