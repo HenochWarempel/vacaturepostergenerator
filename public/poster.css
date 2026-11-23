@@ -96,3 +96,14 @@
 .p-facts .p-fact-v{font-size:calc(20px*var(--s))}
 .poster.fmt-square{--hh:250px}
 .poster.fmt-square.has-photo{--hh:310px}
+
+/* --- liggend: kop begint onder de witte uitsnede, kerngegevens als compacte pillen, rechts verticaal gecentreerd --- */
+.fmt-landscape .L-left{padding-top:calc(167px*var(--k) + 20px*var(--s))}
+.fmt-landscape .L-facts{flex-direction:row;flex-wrap:wrap;gap:calc(8px*var(--s))}
+.fmt-landscape .L-facts .p-fact-v{font-size:calc(19px*var(--s))}
+.fmt-landscape .L-right{justify-content:center}
+.fmt-landscape .L-right .p-sec h2{font-size:calc(31px*var(--s))}
+.fmt-landscape .L-right .p-sec li{font-size:calc(26px*var(--s));padding-left:calc(38px*var(--s))}
+.fmt-landscape .L-right .p-sec li::before{width:calc(26px*var(--s));height:calc(26px*var(--s))}
+.fmt-landscape .L-right .p-sec ul{gap:calc(10px*var(--s))}
+.fmt-landscape .L-right{gap:calc(24px*var(--s))}
